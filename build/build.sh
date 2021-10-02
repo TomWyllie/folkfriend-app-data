@@ -30,5 +30,7 @@ else
     cd ..
     git add folkfriend-non-user-data.json
     git add nud-meta.json
-    git commit -m "Updated"
+    git commit -m "`cat nud-meta.json`"
+    git push
+    deactivate
 fi
