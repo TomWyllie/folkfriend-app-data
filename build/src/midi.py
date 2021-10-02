@@ -22,52 +22,6 @@ class CSVMidiNoteReader(csv.DictReader):
         super().__init__(*posargs, **kwargs)
         self._notes = self.to_notes()
 
-    # def to_spectrogram_mask(self, tempo, start_seconds, end_seconds=10):
-    #     num_frames = ff_config.SPEC_NUM_FRAMES
-    #     num_midi = ff_config.MIDI_NUM
-
-    #     # Length in seconds of one frame
-    #     frame_length_s = ff_config.SPEC_WINDOW_SIZE / ff_config.SAMPLE_RATE
-
-    #     # Times in seconds of frames, after the start point
-    #     frame_times_s = frame_length_s * np.arange(num_frames)
-
-    #     # Add start offset
-    #     frame_times_s += start_seconds
-
-    #     # Convert to milliseconds
-    #     frame_times_ms = 1000 * frame_times_s
-
-    #     pseudo_spectrogram = np.zeros((num_frames, num_midi), dtype=np.uint8)
-
-    #     for note in self._notes:
-    #         note.set_tempo(tempo)
-
-    #         # Note occurs outwith range specified
-    #         if note.end < 1000 * start_seconds or note.start > 1000 * end_seconds:
-    #             continue
-
-    #         # Get the first and last frames of this note
-    #         start_frame = np.argmax(frame_times_ms > note.start)
-    #         end_frame = np.argmax(frame_times_ms > note.end)
-
-    #         if note.start < frame_times_ms[-1] < note.end:
-    #             # RHS edge case
-    #             end_frame = num_frames  # Clip to end
-
-    #         if note.start < frame_times_ms[0] < note.end:
-    #             # LHS edge case
-    #             start_frame = 0  # Clip to start
-
-    #         # Invalid note. Skip this note.
-    #         if not ff_config.MIDI_LOW <= note.pitch <= ff_config.MIDI_HIGH:
-    #             continue
-
-    #         i = ff_config.MIDI_HIGH - note.pitch
-    #         pseudo_spectrogram[start_frame: end_frame, i: i + 1] = 1
-
-    #     return pseudo_spectrogram
-
     def to_notes(self):
         """Convert these midi instructions to a list of Note objects"""
 
@@ -150,7 +104,7 @@ class CSVMidiNoteReader(csv.DictReader):
                 output_time += rounded_int * quaver_duration
                 midi_contour.extend([note.rel_pitch()] * rounded_int)
 
-        return ''.join(ff_config.MIDI_MAP_[n] for n in midi_contour)
+        return ''.join(ff_config.MIDI_MAP[n] for n in midi_contour)
 
 
 

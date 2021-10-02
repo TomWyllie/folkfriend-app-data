@@ -5,13 +5,9 @@ import logging
 import os
 import pathlib
 import re
-import shutil
-import tempfile
+from datetime import date
 
-import requests
-import ff_config
 import midi
-import abc_notation
 
 from tqdm.contrib.concurrent import process_map
 
@@ -24,25 +20,21 @@ STOP_WORDS = {"a", "an", "the", "at", "by", "for", "in", "of", "on",
 NON_WORD_CHARS = re.compile('[^a-zA-Z ]')
 
 
-def build_non_user_data(p_dir):
+def build_non_user_data(parent_dir):
 
     # Set up paths and directories
+    data_dir = os.path.join(parent_dir, 'data')
+    tunes_path = os.path.join(data_dir, 'tunes.json')
+    aliases_path = os.path.join(data_dir, 'aliases.json')
+    non_user_data_path = os.path.join(data_dir, 'folkfriend-non-user-data.json')
+    non_user_metadata_path = os.path.join(data_dir, 'nud-meta.json')
 
-    midis_dir = os.path.join(p_dir, 'midis')
-    tunes_path = os.path.join(p_dir, 'thesession-data.json')
-    aliases_path = os.path.join(p_dir, 'thesession-aliases.json')
-    non_user_data_path = os.path.join(p_dir, 'folkfriend-non-user-data.json')
-
-    pathlib.Path(p_dir).mkdir(parents=True, exist_ok=True)
+    midis_dir = os.path.join(data_dir, 'midis')
     pathlib.Path(midis_dir).mkdir(parents=True, exist_ok=True)
 
-    # Download raw thesession.org data dumps from github
-
-    download_thesession_data(tunes_path)
     with open(tunes_path, 'r') as f:
         thesession_data = json.load(f)
 
-    download_thesession_aliases(aliases_path)
     with open(aliases_path, 'r') as f:
         thesession_aliases = json.load(f)
 
@@ -70,7 +62,8 @@ def build_non_user_data(p_dir):
     log.info('Creating cleaned version of input data file')
     cleaned_thesession_data = clean_thesession_data(thesession_data)
 
-    multiprocessing_input = [(setting, midis_dir) for setting in cleaned_thesession_data]
+    multiprocessing_input = [(setting, midis_dir)
+                             for setting in cleaned_thesession_data]
 
     # The heavy lifting is done here
     contours = process_map(
@@ -100,9 +93,12 @@ def build_non_user_data(p_dir):
         'aliases': gathered_aliases,
     }
 
-    print(f'Writing {non_user_data_path}')
+    log.info(f'Writing {non_user_data_path}')
     with open(non_user_data_path, 'w') as f:
         json.dump(non_user_data, f)
+
+    build_nud_meta(non_user_data_path, non_user_metadata_path)
+
 
 
 def clean_thesession_data(tune_data):
@@ -216,39 +212,24 @@ def generate_midi_contour(args):
     return setting['setting_id'], note_contour
 
 
-def download_thesession_aliases(aliases_path):
-    aliases_url = ff_config.THESESSION_DATA_URL_.replace(
-        'tunes.json', 'aliases.json'
-    )
-    download_thesession_data(aliases_path, aliases_url)
+def build_nud_meta(nud_path, nud_meta_path):
+    first_day_of_2020 = date(day=1, month=1, year=2020)
+    today = date.today()
+    days_since_2020 = (today - first_day_of_2020).days
+    non_user_data_bytes = os.path.getsize(nud_path)
 
+    nud_meta = {
+        'v': days_since_2020,
+        'size': non_user_data_bytes
+    }
 
-def download_thesession_data(tunes_path,
-                             data_url=ff_config.THESESSION_DATA_URL_):
-    if not os.path.exists(tunes_path):
-        # In case we are running trial and error experiments we might be
-        #   deleting and remaking many datasets in a short period.
-        td = tempfile.gettempdir()
-        temp_tunes_path = os.path.join(td, os.path.basename(tunes_path))
-        if os.path.exists(temp_tunes_path):
-            print(f'Found cached {temp_tunes_path}...')
-            shutil.copy(temp_tunes_path, tunes_path)
-            return
-
-        # Otherwise download it fresh from the github repository.
-        print(f'Downloading from {data_url}...')
-        r = requests.get(data_url)
-        with open(tunes_path, 'wb') as f:
-            f.write(r.content)
-
-        # Store to temp in case we need it later
-        shutil.copy(tunes_path, temp_tunes_path)
+    with open(nud_meta_path, 'w') as f:
+        json.dump(nud_meta, f)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dir',
-                        default='./index-data',
-                        help='Directory to contain the dataset files in')
+    parser.add_argument(
+        'dir', help='Parent directory for the `data` directory')
     args = parser.parse_args()
     build_non_user_data(args.dir)
