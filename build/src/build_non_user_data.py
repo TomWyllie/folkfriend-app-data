@@ -26,7 +26,8 @@ def build_non_user_data(parent_dir):
     data_dir = os.path.join(parent_dir, 'data')
     tunes_path = os.path.join(data_dir, 'tunes.json')
     aliases_path = os.path.join(data_dir, 'aliases.json')
-    non_user_data_path = os.path.join(data_dir, 'folkfriend-non-user-data.json')
+    non_user_data_path = os.path.join(
+        data_dir, 'folkfriend-non-user-data.json')
     non_user_metadata_path = os.path.join(data_dir, 'nud-meta.json')
 
     midis_dir = os.path.join(data_dir, 'midis')
@@ -98,7 +99,6 @@ def build_non_user_data(parent_dir):
         json.dump(non_user_data, f)
 
     build_nud_meta(non_user_data_path, non_user_metadata_path)
-
 
 
 def clean_thesession_data(tune_data):

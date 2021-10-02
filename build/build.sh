@@ -27,4 +27,8 @@ else
     python src/build_non_user_data.py $SCRIPTPATH
     mv data/folkfriend-non-user-data.json ..
     mv data/nud-meta.json ..
+    cd ..
+    git add folkfriend-non-user-data.json
+    git add nud-meta.json
+    git commit -m "Updated"
 fi
