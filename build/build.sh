@@ -2,6 +2,18 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH
 
+ABC_VER=`./abc2midi -ver`
+
+if [[ "$ABC_VER" == "4.60 September 15 2021 abc2midi" ]]
+then
+    echo "Found abc2midi version 4.60"
+else
+	echo "Please ensure abc2midi version 4.60 (September 15 2021) is installed."
+	echo "See https://github.com/sshlien/abcmidi"
+	echo "Provide this executable as 'abc2midi' in the build directory."
+    exit
+fi
+
 # Ensure file storing previous hashes existss
 mkdir -p data/
 

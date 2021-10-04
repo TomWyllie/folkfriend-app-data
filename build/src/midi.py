@@ -161,7 +161,7 @@ def abc_to_midi(abc, midi_path, clean=True):
 
     # Generate MIDI file with chords and actual instruments
     captured = subprocess.run([
-        'abc2midi', '-',
+        './abc2midi', '-',
         '-quiet', '-silent',
         '-NGUI' if clean else '',
         '-o', midi_path
