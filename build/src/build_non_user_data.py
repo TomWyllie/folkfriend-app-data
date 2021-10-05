@@ -126,22 +126,26 @@ def gather_aliases(alias_records, tune_data):
 
     aliases = collections.defaultdict(list)
 
-    # Add 'name' fields so that the first alias is always the 'name'
-    #   on the session. This is usually the most common name for the
-    #   tune.
-    for i, _ in enumerate(tune_data):
-        tid = tune_data[i]['tune_id']
-        alias = tune_data[i]['name']
-        aliases[tid].append(alias.lower())
-
     # Add aliases from alias data proper
     for alias_record in sorted(alias_records, key=lambda r: int(r['tune_id'])):
         tid = alias_record['tune_id']
-        alias = alias_record['alias']
-        aliases[tid].append(alias.lower())
+        alias = alias_record['alias'].lower()
+        aliases[tid].append(alias)
 
     for tid in aliases:
         aliases[tid] = deduplicate_aliases(aliases[tid])
+
+    # Add 'name' fields so that the first alias is always the 'name'
+    #   on the session. This is usually the most common name for the
+    #   tune, so we never de-dupe this and make sure it's always the
+    #   first alias.
+    for i, _ in enumerate(tune_data):
+        tid = tune_data[i]['tune_id']
+        alias = tune_data[i]['name'].lower()
+        
+        # Tune name is identical accross settings to only add once per setting.
+        if aliases[tid] and aliases[tid][0] != alias:
+            aliases[tid].insert(0, alias)
 
     return aliases
 
