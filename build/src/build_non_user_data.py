@@ -144,8 +144,11 @@ def gather_aliases(alias_records, tune_data):
         alias = tune_data[i]['name'].lower()
         
         # Tune name is identical accross settings to only add once per setting.
-        if aliases[tid] and aliases[tid][0] != alias:
+        if not aliases[tid] or aliases[tid][0] != alias:
             aliases[tid].insert(0, alias)
+
+    for alias_list in aliases.values():
+        assert alias_list
 
     return aliases
 
