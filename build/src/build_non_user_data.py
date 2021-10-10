@@ -111,8 +111,10 @@ def clean_thesession_data(tune_data):
         tune_data[i]['dance'] = tune_data[i]['type']
         del tune_data[i]['type']
 
-        # The keys are still stored as strings because that's all JSON can do
-        tune_data[i]['tune_id'] = int(tune_data[i]['tune_id'])
+        # The keys are still stored as strings because that's all JSON can do.
+        #   We don't bother converting the tune_id to an int so that it can be
+        #   used as a key directly without worrying about parsing between int
+        #   and string.
 
     return tune_data
 
