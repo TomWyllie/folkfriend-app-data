@@ -39,12 +39,13 @@ then
 else 
     cat $NEW_HASH > $OLD_HASH
     python src/build_non_user_data.py $SCRIPTPATH
-    mv data/folkfriend-non-user-data.json ..
-    mv data/nud-meta.json ..
+    mv data/folkfriend-non-user-data.json ../public/
+    mv data/nud-meta.json ../public/
     cd ..
-    git add folkfriend-non-user-data.json
-    git add nud-meta.json
+    git add public/folkfriend-non-user-data.json
+    git add public/nud-meta.json
     git commit -m "`cat nud-meta.json`"
     git push
+    firebase deploy
     deactivate
 fi

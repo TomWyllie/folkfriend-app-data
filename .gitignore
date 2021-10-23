@@ -3,3 +3,4 @@ build/abc2midi
 */__pycache__/*
 *.pyc
 */venv/*
+.firebase/*
