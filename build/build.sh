@@ -6,11 +6,11 @@ cd $SCRIPTPATH
 
 ABC_VER=`./abc2midi -ver`
 
-if [[ "$ABC_VER" == "4.60 September 15 2021 abc2midi" ]]
+if [[ "$ABC_VER" == "4.84 January 20 2023 abc2midi" ]]
 then
-    echo "Found abc2midi version 4.60"
+    echo "Found abc2midi version 4.84"
 else
-	echo "Please ensure abc2midi version 4.60 (September 15 2021) is installed."
+	echo "Please ensure abc2midi version 4.84 (January 20 2023) is installed."
 	echo "See https://github.com/sshlien/abcmidi"
 	echo "Provide this executable as 'abc2midi' in the build directory."
     exit
