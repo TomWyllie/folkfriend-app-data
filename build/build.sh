@@ -44,7 +44,7 @@ else
     cd ..
     git add public/folkfriend-non-user-data.json
     git add public/nud-meta.json
-    git commit -m "`cat nud-meta.json`"
+    git commit -m "`cat public/nud-meta.json`"
     git push
     firebase deploy
     deactivate
