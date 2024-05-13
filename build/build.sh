@@ -46,6 +46,6 @@ else
     git add public/nud-meta.json
     git commit -m "`cat public/nud-meta.json`"
     git push
-    firebase deploy
+    /usr/local/bin/firebase deploy
     deactivate
 fi
