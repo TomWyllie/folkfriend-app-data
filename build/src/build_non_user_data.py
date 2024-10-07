@@ -202,6 +202,7 @@ def generate_midi_contour(args):
         'X:1',
         'T:',
         f'M:{setting["meter"].strip()}',
+        'L:1/8',
         f'K:{setting["mode"].strip()}'
     ]
     abc_body = setting['abc'].replace(
